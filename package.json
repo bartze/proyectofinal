@@ -1,0 +1,31 @@
+{
+  "name": "proyectofinal",
+  "version": "1.0.0",
+  "description": "Proyecto final para demostrar conocimientos adquiridos en los módulos de git, docker, html, css, javascript, node, databases, express y react.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --watch index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "proyecto final",
+    "node.js",
+    "express",
+    "sequelize",
+    "react",
+    "docker"
+  ],
+  "author": "Iñaki Barceló",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "sequelize": "^6.37.5",
+    "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bartze/proyectofinal.git"
+  }
+}
