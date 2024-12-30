@@ -1,3 +1,6 @@
 node_modules/
 database/pgadmin/
 database/postgres/
+.env
+*.log
+dist/ # Si tienes un directorio de compilación

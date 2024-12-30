@@ -1,18 +1,39 @@
+version: "3.9"
 services:
   postgres:
     container_name: postgres_container
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: changeme
+      POSTGRES_PASSWORD: Tekken55% # Contraseña segura (ejemplo)
+      POSTGRES_DB: tiendavideojuegos # Crea la base de datos al iniciar
       PGDATA: /data/postgres
     volumes:
-      - ./postgres:/data/postgres
+      - ./database/postgres:/data/postgres # Persistencia
     ports:
-      - "5432:5432"
+      - "5432:5432" # Solo para acceso desde el host
     networks:
       - postgres_net
     restart: unless-stopped
+
+  app:
+    build: ./backend # Ruta al Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: Tekken55% # Debe ser la misma que en postgres
+      DB_NAME: tiendavideojuegos
+      DB_PORT: 5432
+    networks:
+      - postgres_net
+    volumes:
+      - ./backend:/usr/src/app # Monta la carpeta backend
+    working_dir: /usr/src/app # Establece el directorio de trabajo
+    command: npm run dev # Ejecuta tu script de desarrollo
 
   pgadmin:
     container_name: pgadmin_container
@@ -22,7 +43,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
-      - ./pgadmin:/var/lib/pgadmin
+      - ./database/pgadmin:/var/lib/pgadmin
     ports:
       - "5050:80"
     networks:
@@ -32,7 +53,3 @@ services:
 networks:
   postgres_net:
     driver: bridge
-
-volumes:
-  postgres:
-  pgadmin:
