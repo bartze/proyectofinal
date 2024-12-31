@@ -5,7 +5,7 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Tekken55% # Contraseña segura (ejemplo)
+      POSTGRES_PASSWORD: Tekken55%
       POSTGRES_DB: tiendavideojuegos # Crea la base de datos al iniciar
       PGDATA: /data/postgres
     volumes:
@@ -22,12 +22,6 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
-    environment:
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASSWORD: Tekken55% # Debe ser la misma que en postgres
-      DB_NAME: tiendavideojuegos
-      DB_PORT: 5432
     networks:
       - postgres_net
     volumes:

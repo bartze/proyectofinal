@@ -1,40 +1,42 @@
-# Proyecto Final
+# Proyecto Final - Tienda de Videojuegos
 
 ## Descripción
 
-Este proyecto es una aplicación integral que abarca varios módulos aprendidos en el curso, incluidos Git, Docker, HTML, CSS, JavaScript, Node.js, bases de datos (PostgreSQL), Express, y React. El proyecto se centra en la gestión de una tienda de videojuegos, incluyendo funcionalidades de backend, frontend y base de datos.
+Este proyecto es una aplicación web para la gestión de una tienda de videojuegos, desarrollada como proyecto final del curso. Integra diversas tecnologías y conceptos, incluyendo Git, Docker, HTML, CSS, JavaScript, Node.js, Express, Sequelize (ORM), PostgreSQL como base de datos y React para el frontend. Se centra en proporcionar una API RESTful para la gestión de clientes y, en un futuro, se extenderá a la gestión de videojuegos, pedidos, etc.
+
+## Funcionalidades Actuales
+
+- **Backend (API REST):**
+  - Conexión a base de datos PostgreSQL mediante Sequelize.
+  - Ruta GET `/api/clientes` para obtener todos los clientes de la base de datos en formato JSON.
+  - Manejo de errores robusto para las peticiones a la API.
+- **Frontend:** (A completar con la información del frontend cuando esté más avanzado)
+  - Estructura básica con React.
 
 ## Estructura del Proyecto
 
-```plaintext
+La estructura del proyecto se organiza de la siguiente manera:
+
+```
 proyectofinal/
 ├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── index.js
-│   └── config.js
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── App.js
-│   │   └── index.js
-│   └── package.json
+│   ├── models/           # Definición de los modelos Sequelize (ej. Cliente.js)
+│   ├── routes/           # Definición de las rutas de la API (ej. clientes.js)
+│   ├── index.js          # Punto de entrada del backend
+│   └── models/index.js    # Configuración de Sequelize y conexión a la base de datos
+├── frontend/          # Código del frontend (React)
+│   └── ...              # (A completar con la estructura real del frontend)
 ├── database/
-│   ├── pgadmin/
-│   ├── postgres/
-│   ├── northwind.sql
-│   ├── docker-compose.yaml
-│   └── init.sql
-├── documentation/
+│   ├── postgres/         # Configuración de PostgreSQL para Docker
+│   ├── docker-compose.yaml # Archivo de configuración de Docker Compose
+│   └── init.sql          # Script SQL para inicializar la base de datos (si aplica)
+├── documentation/       # Documentación del proyecto
 │   ├── cuestionario.md
 │   ├── consultas.md
 │   ├── modelado.md
 │   └── README.md
-└── assets/
-    └── tiendaVideojuegos.png
+└── assets/              # Recursos estáticos (imágenes, etc.)
+└── tiendaVideojuegos.png
 ```
 
 ## Requisitos
@@ -95,7 +97,7 @@ cd frontend
 npm install
 ```
 
-3. Inicia el servidor de desarrollo:
+3. Inicia el servidor de desarrollo: No hace falta si lo inicias con docker-compose
 
 ```
 npm start
@@ -106,7 +108,7 @@ npm start
 1. Inicia Docker Compose:
 
 ```
-docker-compose up -d
+docker-compose up --build -d
 ```
 
 2. Accede al contenedor PostgreSQL:
