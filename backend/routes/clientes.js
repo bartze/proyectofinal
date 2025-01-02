@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { Cliente } = require("../models/Cliente"); // Importa el modelo
+const { Cliente } = require("../models/Cliente");
 
 router.get("/clientes", async (req, res) => {
-  // Ruta corregida: /clientes
   try {
     const clientes = await Cliente.findAll();
     res.json(clientes);
