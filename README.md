@@ -129,6 +129,23 @@ psql -U postgres -d tiendavideojuegos -f /path/to/init.sql
 
 - El servidor backend se ejecuta en http://localhost:3000/.
 - Puntos de acceso API disponibles en /clientes, /videojuegos, /pedidos, etc.
+- /api/clientes:
+  [
+  {
+  "id": 1,
+  "nombre": "Juan Pérez",
+  "direccion": "Calle Falsa 123",
+  "email": "juan.perez@example.com",
+  "telefono": "123456789"
+  },
+  {
+  "id": 2,
+  "nombre": "María Gómez",
+  "direccion": "Avenida Siempre Viva 742",
+  "email": "maria.gomez@example.com",
+  "telefono": "987654321"
+  }
+  ]
 
 ### Frontend
 

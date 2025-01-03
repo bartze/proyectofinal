@@ -4,15 +4,15 @@ const { sequelize } = require("./index");
 const Cliente = sequelize.define(
   "Cliente",
   {
-    cliente_id: {
-      // Define la columna cliente_id
+    id: {
+      // Define la columna id
       type: DataTypes.INTEGER, // O el tipo de dato que corresponda (ej. UUID, BIGINT)
       primaryKey: true, // Indica que es la clave primaria
-      autoIncrement: true, // Si cliente_id es autoincremental
+      autoIncrement: true, // Si id es autoincremental
     },
     nombre: DataTypes.STRING,
     direccion: DataTypes.STRING,
-    correo_electronico: DataTypes.STRING,
+    email: DataTypes.STRING,
     telefono: DataTypes.STRING,
   },
   {
