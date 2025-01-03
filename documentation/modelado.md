@@ -1,170 +1,196 @@
-Paso 1: Plantear el Caso de Uso
-Caso de Uso: Gestión de una Tienda de Videojuegos
+# Paso 1: Plantear el Caso de Uso
 
-Requisitos:
-Gestión de Productos: La tienda vende una variedad de videojuegos. Cada videojuego tiene un título, plataforma, género y precio.
+## Caso de Uso: Gestión de una Tienda de Videojuegos
 
-Gestión de Clientes: La tienda tiene una base de datos de clientes que incluye información como nombre, dirección, correo electrónico y número de teléfono.
+### Requisitos:
 
-Gestión de Pedidos: Los clientes pueden realizar pedidos de varios videojuegos. Cada pedido tiene un identificador único, fecha del pedido y estado del pedido (pendiente, enviado, entregado).
+**Gestión de Productos:** La tienda vende una variedad de videojuegos. Cada videojuego tiene un título, plataforma y precio.
 
-Entidades:
-Videojuegos:
+**Gestión de Clientes:** La tienda tiene una base de datos de clientes que incluye información como nombre, dirección, email y número de teléfono.
 
-videojuego_id (Primary Key)
+**Gestión de Pedidos:** Los clientes pueden realizar pedidos de varios videojuegos. Cada pedido tiene un identificador único, fecha del pedido y estado del pedido (pendiente, enviado, entregado).
 
-titulo
+**Gestión de Proveedores:** La tienda tiene proveedores que suministran los videojuegos. Cada proveedor tiene un identificador único, NIF y nombre.
 
-plataforma
+### Entidades:
 
-genero
+#### Videojuegos:
 
-precio
+- id (Primary Key)
+- titulo
+- plataforma
+- precio
+- proveedor_id (Foreign Key, referencia a Proveedor)
 
-Clientes:
+#### Clientes:
 
-cliente_id (Primary Key)
+- id (Primary Key)
+- nombre
+- direccion
+- email
+- telefono
 
-nombre
+#### Pedidos:
 
-direccion
+- id (Primary Key)
+- cliente_id (Foreign Key, referencia a Clientes)
+- fecha
+- estado
 
-correo_electronico
+#### PedidosVideojuego (para la relación N:M entre Pedidos y Videojuegos):
 
-telefono
+- pedido_id (Foreign Key, referencia a Pedidos)
+- videojuego_id (Foreign Key, referencia a Videojuegos)
+- cantidad
 
-Pedidos:
+#### Proveedores:
 
-pedido_id (Primary Key)
+- id (Primary Key)
+- nif
+- nombre
 
-cliente_id (Foreign Key, referencia a Clientes)
+# Paso 2: Crear el Modelo Entidad-Relación con la herramienta GitMind
 
-fecha_pedido
+## Diagrama Entidad-Relación (ERD)
 
-estado_pedido
+- **realiza** entre Clientes y Pedidos: (1:N) Un cliente puede realizar muchos pedidos, un pedido solo puede ser realizado por un cliente.
 
-Detalles del Pedido (para la relación N:M entre Pedidos y Videojuegos):
+- **incluye** entre Pedidos y Videojuegos: (N:M) Un pedido puede incluir muchos videojuegos y un videojuego puede estar en muchos pedidos. La tabla intermedia PedidoVideojuego gestiona esta relación N:M.
 
-pedido_id (Foreign Key, referencia a Pedidos)
+- **suministra** entre Proveedores y Videojuegos: (1:N) Un proveedor puede suministrar muchos videojuegos, un videojuego solo puede ser suministrado por un proveedor.
 
-videojuego_id (Foreign Key, referencia a Videojuegos)
+Como me he basado en un modelo de dropshipping para tiendas online sin stock y servir directamente del proveedor, no he usado la columna stock.
 
-cantidad
+# Paso 3:
 
-Paso 2: Crear el Modelo Entidad-Relación con la herramienta GitMind
-Diagrama Entidad-Relación (ERD)
-Clientes tiene una relación 1:N con Pedidos (un cliente puede realizar múltiples pedidos).
-
-Pedidos tiene una relación N:M con Videojuegos a través de Detalles del Pedido (un pedido puede incluir múltiples videojuegos y cada videojuego puede estar en múltiples pedidos).
-
-![Diagrama ER de la Tienda de Videojuegos](../assets/tiendaVideojuegos.png)
-
-Paso 3: Crear la Base de Datos y las Tablas
+- Crear la Base de Datos y las Tablas
 
 ```
 docker-compose up -d
-```
-
-```
 docker exec -it postgres_container bash
-```
-
-```
 psql -U postgres
+\c tiendavideojuegos
 ```
 
 ```
 CREATE DATABASE tiendavideojuegos;
 ```
 
-Vamos a definir las tablas y sus relaciones en SQL.
+- Definir las tablas y sus relaciones en SQL.
+
+```sql
+CREATE TABLE clientes (
+id SERIAL PRIMARY KEY,
+nombre VARCHAR(100),
+direccion VARCHAR(255),
+email VARCHAR(100),
+telefono VARCHAR(20)
+);
+
+CREATE TABLE proveedores (
+id SERIAL PRIMARY KEY,
+nif VARCHAR(50),
+nombre VARCHAR(100)
+);
+
+CREATE TABLE videojuegos (
+id SERIAL PRIMARY KEY,
+titulo VARCHAR(100),
+plataforma VARCHAR(50),
+precio DECIMAL(10, 2),
+proveedor_id INT REFERENCES Proveedores(id)
+);
+
+CREATE TABLE pedidos (
+id SERIAL PRIMARY KEY,
+cliente_id INT REFERENCES Clientes(id),
+fecha DATE,
+estado VARCHAR(50)
+);
+
+CREATE TABLE pedidosvideojuego (
+pedido_id INT REFERENCES Pedidos(id),
+videojuego_id INT REFERENCES Videojuegos(id),
+cantidad INT,
+PRIMARY KEY (pedido_id, videojuego_id)
+);
+```
+
+# Paso 4: Poblar la Base de Datos con Registros
+
+- Insertar clientes
 
 ```
-CREATE TABLE Clientes (
-    cliente_id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100),
-    direccion VARCHAR(255),
-    correo_electronico VARCHAR(100),
-    telefono VARCHAR(20)
-);
-
-CREATE TABLE Videojuegos (
-    videojuego_id SERIAL PRIMARY KEY,
-    titulo VARCHAR(100),
-    plataforma VARCHAR(50),
-    genero VARCHAR(50),
-    precio DECIMAL(10, 2)
-);
-
-CREATE TABLE Pedidos (
-    pedido_id SERIAL PRIMARY KEY,
-    cliente_id INT REFERENCES Clientes(cliente_id),
-    fecha_pedido DATE,
-    estado_pedido VARCHAR(50)
-);
-
-CREATE TABLE DetallesPedido (
-    pedido_id INT REFERENCES Pedidos(pedido_id),
-    videojuego_id INT REFERENCES Videojuegos(videojuego_id),
-    cantidad INT,
-    PRIMARY KEY (pedido_id, videojuego_id)
-);
-```
-
-Paso 4: Poblar la Base de Datos con Registros
-Vamos a insertar algunos datos de ejemplo en las tablas.
-
-```
--- Insertar clientes
-INSERT INTO Clientes (nombre, direccion, correo_electronico, telefono)
+INSERT INTO clientes (nombre, direccion, email, telefono)
 VALUES
 ('Juan Pérez', 'Calle Falsa 123', 'juan.perez@example.com', '123456789'),
 ('María Gómez', 'Avenida Siempre Viva 742', 'maria.gomez@example.com', '987654321');
-
--- Insertar videojuegos
-INSERT INTO Videojuegos (titulo, plataforma, genero, precio)
-VALUES
-('The Legend of Zelda', 'Nintendo Switch', 'Aventura', 59.99),
-('God of War', 'PlayStation 4', 'Acción', 49.99),
-('Halo Infinite', 'Xbox Series X', 'FPS', 69.99);
-
--- Insertar pedidos
-INSERT INTO Pedidos (cliente_id, fecha_pedido, estado_pedido)
-VALUES
-(1, '2024-12-01', 'Pendiente'),
-(2, '2024-12-02', 'Enviado');
-
--- Insertar detalles de pedidos
-INSERT INTO DetallesPedido (pedido_id, videojuego_id, cantidad)
-VALUES
-(1, 1, 1),
-(1, 2, 1),
-(2, 3, 2);
 ```
 
-Paso 5: Realizar Consultas para Validar el Modelo
-
-1. Buscar todos los pedidos de un cliente:
+- Insertar proveedores
 
 ```
-SELECT p.pedido_id, p.fecha_pedido, p.estado_pedido, c.nombre
-FROM Pedidos p
-JOIN Clientes c ON p.cliente_id = c.cliente_id
+  INSERT INTO proveedores (nif, nombre)
+  VALUES
+  ('12345678A', 'Nintendo'),
+  ('87654321B', 'Sony'),
+  ('12348765C', 'Microsoft');
+```
+
+- Insertar videojuegos
+
+```
+  INSERT INTO videojuegos (titulo, plataforma, precio, proveedor_id)
+  VALUES
+  ('The Legend of Zelda', 'Nintendo Switch', 59.99, 1),
+  ('God of War', 'PlayStation 4', 49.99, 2),
+  ('Halo Infinite', 'Xbox Series X', 69.99, 3);
+```
+
+- Insertar pedidos
+
+```
+  INSERT INTO pedidos (cliente_id, fecha, estado)
+  VALUES
+  (1, '2024-12-01', 'Pendiente'),
+  (2, '2024-12-02', 'Enviado');
+```
+
+- Insertar detalles de pedidos
+
+```
+  INSERT INTO pedidosvideojuego (pedido_id, videojuego_id, cantidad)
+  VALUES
+  (1, 1, 1),
+  (1, 2, 1),
+  (2, 3, 2);
+```
+
+# Paso 5: Realizar Consultas para Validar el Modelo
+
+- Buscar todos los pedidos de un cliente:
+
+```
+SELECT p.id, p.fecha, p.estado, c.nombre
+FROM pedidos p
+JOIN clientes c ON p.cliente_id = c.id
 WHERE c.nombre = 'Juan Pérez';
 ```
 
-pedido_id | fecha_pedido | estado_pedido | nombre  
------------+--------------+---------------+------------
+id | fecha | estado | nombre  
+----+------------+-----------+------------
 1 | 2024-12-01 | Pendiente | Juan Pérez
 (1 row)
 
 2. Listar todos los videojuegos pedidos en un pedido específico:
 
 ```
-SELECT v.titulo, v.plataforma, dp.cantidad
-FROM DetallesPedido dp
-JOIN Videojuegos v ON dp.videojuego_id = v.videojuego_id
-WHERE dp.pedido_id = 1;
+
+SELECT v.titulo, v.plataforma, pv.cantidad
+FROM pedidosvideojuego pv
+JOIN videojuegos v ON pv.videojuego_id = v.id
+WHERE pv.pedido_id = 1;
+
 ```
 
        titulo        |   plataforma    | cantidad
@@ -177,13 +203,15 @@ God of War | PlayStation 4 | 1
 3. Buscar clientes que han realizado pedidos en una fecha específica:
 
 ```
-SELECT c.nombre, c.correo_electronico
-FROM Clientes c
-JOIN Pedidos p ON c.cliente_id = p.cliente_id
-WHERE p.fecha_pedido = '2024-12-01';
+
+SELECT c.nombre, c.email
+FROM clientes c
+JOIN pedidos p ON c.id = p.cliente_id
+WHERE p.fecha = '2024-12-01';
+
 ```
 
-nombre | correo_electronico  
+nombre | email
 ------------+------------------------
 Juan Pérez | juan.perez@example.com
 (1 row)
@@ -191,10 +219,12 @@ Juan Pérez | juan.perez@example.com
 4. Listar los videojuegos y la cantidad total pedida de cada uno:
 
 ```
-SELECT v.titulo, SUM(dp.cantidad) AS total_pedido
-FROM Videojuegos v
-JOIN DetallesPedido dp ON v.videojuego_id = dp.videojuego_id
+
+SELECT v.titulo, SUM(pv.cantidad) AS total_pedido
+FROM videojuegos v
+JOIN pedidosvideojuego pv ON v.id = pv.videojuego_id
 GROUP BY v.titulo;
+
 ```
 
        titulo        | total_pedido
@@ -208,18 +238,26 @@ God of War | 1
 5. Listar todos los pedidos y sus detalles:
 
 ```
-SELECT p.pedido_id, c.nombre, v.titulo, dp.cantidad, p.fecha_pedido, p.estado_pedido
-FROM Pedidos p
-JOIN Clientes c ON p.cliente_id = c.cliente_id
-JOIN DetallesPedido dp ON p.pedido_id = dp.pedido_id
-JOIN Videojuegos v ON dp.videojuego_id = v.videojuego_id;
+
+SELECT p.id, c.nombre, v.titulo, pv.cantidad, p.fecha, p.estado
+FROM pedidos p
+JOIN clientes c ON p.cliente_id = c.id
+JOIN pedidosvideojuego pv ON p.id = pv.pedido_id
+JOIN videojuegos v ON pv.videojuego_id = v.id;
+
 ```
 
-pedido_id | nombre | titulo | cantidad | fecha_pedido | estado_pedido
------------+-------------+---------------------+----------+--------------+---------------
+id | nombre | titulo | cantidad | fecha | estado  
+----+-------------+---------------------+----------+------------+-----------
 1 | Juan Pérez | The Legend of Zelda | 1 | 2024-12-01 | Pendiente
 1 | Juan Pérez | God of War | 1 | 2024-12-01 | Pendiente
 2 | María Gómez | Halo Infinite | 2 | 2024-12-02 | Enviado
 (3 rows)
 
-Archivo SQL: Puedes entregar un archivo .sql con todas las consultas SQL realizadas.
+```
+
+
+
+
+
+```
